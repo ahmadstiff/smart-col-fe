@@ -31,6 +31,10 @@ export default function RootLayout({ children }: Readonly<RootLayoutProps>) {
 
   return (
     <html lang="en" suppressHydrationWarning>
+      <meta
+        name="format-detection"
+        content="telephone=no, date=no, email=no, address=no"
+      />
       <body
         suppressHydrationWarning
         className={`${geistSans.variable} ${geistMono.variable} font-sans antialiased min-h-screen bg-[#0d0d21]`}

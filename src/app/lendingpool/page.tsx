@@ -31,7 +31,7 @@ export default function LendingPage() {
               className="w-full"
               onValueChange={setActiveTab}
             >
-              <TabsList className="grid grid-cols-3 gap-4 bg-gray-900/50">
+              <TabsList className="grid grid-cols-2 gap-4 bg-gray-900/50">
                 <TabsTrigger
                   value="pool"
                   className="data-[state=active]:bg-blue-600"
@@ -41,7 +41,7 @@ export default function LendingPage() {
                 </TabsTrigger>
                 <TabsTrigger
                   value="position"
-                  className="data-[state=active]:bg-blue-600"
+                  className="data-[state=active]:bg-blue-600 hidden"
                 >
                   <LayersIcon className="w-4 h-4 mr-2" />
                   Create Position

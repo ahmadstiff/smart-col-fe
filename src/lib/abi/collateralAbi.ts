@@ -77,6 +77,19 @@ export const factoryAbi = [
         "type": "function"
     },
     {
+        "inputs": [],
+        "name": "id",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
         "inputs": [
             {
                 "internalType": "address",
@@ -89,6 +102,35 @@ export const factoryAbi = [
             {
                 "internalType": "address",
                 "name": "",
+                "type": "address"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "name": "lendingPoolId",
+        "outputs": [
+            {
+                "internalType": "address",
+                "name": "collateralToken",
+                "type": "address"
+            },
+            {
+                "internalType": "address",
+                "name": "borrowToken",
+                "type": "address"
+            },
+            {
+                "internalType": "address",
+                "name": "lendingPoolAddress",
                 "type": "address"
             }
         ],
