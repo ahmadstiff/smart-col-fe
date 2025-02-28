@@ -125,8 +125,9 @@ export const WithdrawDialog = () => {
         functionName: "withdrawCollateral",
         args: [amount],
       });
+
+      toast.success("Withdrawal in progress...");
       setWethAmount("0");
-      setIsOpen(false);
     } catch (error) {
       toast.error("Withdrawal failed. Please try again.");
     }

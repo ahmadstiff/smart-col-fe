@@ -13,13 +13,6 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectTrigger,
-  SelectValue,
-  SelectContent,
-  SelectItem,
-} from "@/components/ui/select";
 import { mockErc20Abi } from "@/lib/abi/mockErc20Abi";
 import { poolAbi } from "@/lib/abi/poolAbi";
 import { lendingPool, mockUsdc } from "@/constants/addresses";
@@ -137,27 +130,37 @@ export const RepayDialog = () => {
       return;
     }
 
-    const amount = Number(parseUnits(usdcAmount, 6));
+    setIsOpen(true); // Pastikan dialog tetap terbuka saat transaksi berlangsung
+
+    const amount = Number(usdcAmount) * 1e6;
     const result = Math.round((amount * supplyAssets) / supplyShares + amount);
 
     try {
-      await writeContract({
+      // Approve transaction
+      const approveTx = writeContract({
         address: mockUsdc,
         abi: mockErc20Abi,
         functionName: "approve",
         args: [lendingPool, BigInt(result)],
       });
 
-      await writeContract({
+      await approveTx;
+
+      // Repay transaction
+      const repayTx = writeContract({
         address: lendingPool,
         abi: poolAbi,
         functionName: "repayByPosition",
         args: [amount],
       });
+
+      await repayTx;
+
+      // Reset amount dan tutup dialog setelah transaksi sukses
       setUsdcAmount("0");
       setIsOpen(false);
     } catch (error) {
-      Error("Transaction failed:");
+      console.error("Transaction failed:", error);
     }
   };
 
@@ -177,7 +180,7 @@ export const RepayDialog = () => {
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+    <Dialog open={isOpen || isPending} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
         <Button
           className="bg-gradient-to-r from-blue-600 to-indigo-400 hover:from-blue-600 hover:to-indigo-500 text-white font-medium shadow-md hover:shadow-lg transition-all duration-300 rounded-lg border-0"

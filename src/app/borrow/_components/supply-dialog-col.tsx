@@ -98,8 +98,8 @@ export default function SupplyDialogCol({ token }: SupplyDialogProps) {
         return;
       }
 
-      const decimals = 18;
-      const parsedAmount = parseUnits(amount, decimals);
+      const parsedAmount = parseUnits(amount.toString(), 18);
+
 
       if (!hasPosition) {
         await createPositionTransaction({
