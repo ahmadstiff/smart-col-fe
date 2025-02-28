@@ -112,69 +112,84 @@ export default function AssetsToBorrow() {
           Lending Pool
         </CardTitle>
       </CardHeader>
+
       <CardContent className="space-y-4">
         <div className="text-slate-300 text-lg font-semibold">Collateral</div>
         <div className="grid grid-cols-12 gap-4 bg-[#161835] p-4 rounded-lg">
-          <div className="col-span-4 flex items-center gap-2">
-            <Image
-              src={weth}
-              alt="Token logo"
-              width={24}
-              height={24}
-              className="rounded-full"
-            />
-            <span className="font-medium text-slate-400">
-              {isCollateralTokenLoading ? (
-                <Skeleton className="h-6 w-20 bg-slate-400" />
-              ) : (
-                getSymbol(collateralToken)
-              )}
-            </span>
-          </div>
-          <div className="col-span-5 text-slate-400 flex items-center">
-            {isBalanceLoading ? (
-              <Skeleton className="h-6 w-20 bg-slate-400" />
-            ) : (
-              Number(collateralBalance) < 1 / 1e15 ? 0 : collateralBalance
-            )}
-          </div>
-          <div className="col-span-3 flex items-center justify-end gap-2">
-            {isCollateralTokenLoading ? (
-              <Skeleton className="h-8 w-20 bg-slate-400" />
-            ) : (
-              <SupplyDialog token={getSymbol(collateralToken)} />
-            )}
-            <WithdrawDialog />
-          </div>
+          {isCollateralTokenLoading || isBalanceLoading || isBorrowLoading ? (
+            <Skeleton className="h-10 w-full col-span-12 bg-slate-400" />
+          ) : (
+            <>
+              <div className="col-span-4 flex items-center gap-2">
+                <Image
+                  src={weth}
+                  alt="Token logo"
+                  width={24}
+                  height={24}
+                  className="rounded-full"
+                />
+                <span className="font-medium text-slate-400">
+                  {isCollateralTokenLoading ? (
+                    <Skeleton className="h-6 w-20 bg-slate-400" />
+                  ) : (
+                    getSymbol(collateralToken)
+                  )}
+                </span>
+              </div>
+              <div className="col-span-5 text-slate-400 flex items-center">
+                {isBalanceLoading ? (
+                  <Skeleton className="h-6 w-20 bg-slate-400" />
+                ) : Number(collateralBalance) < 1 / 1e15 ? (
+                  0
+                ) : (
+                  collateralBalance
+                )}
+              </div>
+              <div className="col-span-3 flex items-center justify-end gap-2">
+                {isCollateralTokenLoading ? (
+                  <Skeleton className="h-8 w-20 bg-slate-400" />
+                ) : (
+                  <SupplyDialog token={getSymbol(collateralToken)} />
+                )}
+                <WithdrawDialog />
+              </div>
+            </>
+          )}
         </div>
 
         <div className="text-slate-300 text-lg font-semibold mt-6">Borrow</div>
         <div className="grid grid-cols-12 gap-4 bg-[#161835] p-4 rounded-lg">
-          <div className="col-span-4 flex items-center gap-2">
-            <Image
-              src={usdc}
-              alt="USDC logo"
-              width={24}
-              height={24}
-              className="rounded-full"
-            />
-            <span className="font-medium text-slate-400">$USDC</span>
-          </div>
-          <div className="col-span-4 text-slate-400 mt-1">
-            {isBorrowLoading ? (
-              <Skeleton className="h-6 w-20 bg-slate-400" />
-            ) : (
-              userBorrowBalance
-            )}
-          </div>
-          <div className="col-span-4 flex gap-2 justify-end">
-            {isBorrowLoading ? (
-              <Skeleton className="h-8 w-20 bg-slate-400" />
-            ) : (
-              <BorrowDialog token="USDC" />
-            )}
-            <RepayDialog />
-          </div>
+          {isBorrowLoading ? (
+            <Skeleton className="h-10 w-full col-span-12 bg-slate-400" />
+          ) : (
+            <>
+              <div className="col-span-4 flex items-center gap-2">
+                <Image
+                  src={usdc}
+                  alt="USDC logo"
+                  width={24}
+                  height={24}
+                  className="rounded-full"
+                />
+                <span className="font-medium text-slate-400">$USDC</span>
+              </div>
+              <div className="col-span-4 text-slate-400 mt-1">
+                {isBorrowLoading ? (
+                  <Skeleton className="h-6 w-20 bg-slate-400" />
+                ) : (
+                  userBorrowBalance
+                )}
+              </div>
+              <div className="col-span-4 flex gap-2 justify-end">
+                {isBorrowLoading ? (
+                  <Skeleton className="h-8 w-20 bg-slate-400" />
+                ) : (
+                  <BorrowDialog token="USDC" />
+                )}
+                <RepayDialog />
+              </div>
+            </>
+          )}
         </div>
       </CardContent>
     </Card>

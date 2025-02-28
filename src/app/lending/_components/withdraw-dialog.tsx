@@ -18,7 +18,11 @@ import { lendingPool } from "@/constants/addresses";
 import { ArrowUpRight, Loader2, Wallet } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { useSupplyUser } from "@/hooks/useTotalSuppy";
+import {
+  useSupplyAssets,
+  useSupplyShares,
+  useSupplyUser,
+} from "@/hooks/useTotalSuppy";
 
 export const WithdrawDialog = () => {
   const [shares, setShares] = useState("0");
@@ -48,6 +52,12 @@ export const WithdrawDialog = () => {
       console.error("Withdrawal failed:", error);
     }
   };
+
+  // uint256 amount = ((shares * totalSupplyAssets) / totalSupplyShares);
+  const totalSupplyAssets = useSupplyAssets();
+  const totalSupplyShares = useSupplyShares();
+  const amount =
+    (Number(shares) * Number(totalSupplyAssets)) / Number(totalSupplyShares);
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
@@ -87,21 +97,38 @@ export const WithdrawDialog = () => {
               <div className="flex items-center space-x-2 bg-slate-50 p-2 rounded-lg border border-slate-200">
                 <Input
                   value={shares}
-                  onChange={(e) => setShares(e.target.value)}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    if (/^\d*\.?\d*$/.test(value)) {
+                      setShares(value);
+                    }
+                  }}
                   className="border-0 bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 text-lg font-medium"
                   placeholder="0.00"
                 />
+
                 <div className="flex items-center gap-1 bg-slate-200 px-3 py-1 rounded-md">
                   <Wallet className="h-4 w-4 text-slate-700" />
                   <span className="font-semibold text-slate-700">Shares</span>
-                  <span className="font-semibold text-slate-700">{supply}</span>
                 </div>
               </div>
             </CardContent>
           </Card>
-          <div className="flex mt-2 justify-between items-center">
+          <div className="flex mt-2 -mb-5 justify-between items-center">
+            <span className="text-sm text-gray-700">Your Shares</span>
+            <span className="text-sm text-gray-700">{supply} $Shares</span>
+          </div>
+          <div className="flex mt-0 justify-between items-center">
             <span className="text-sm text-gray-700">You Will Got</span>
-            <span className="text-sm text-gray-700">balance</span>
+            <span className="text-sm text-gray-700">
+              {Number(shares)
+                ? (
+                    (Number(shares) * Number(totalSupplyAssets)) /
+                    Number(totalSupplyShares)
+                  ).toFixed(6)
+                : 0}{" "}
+              $USDC
+            </span>
           </div>
         </div>
         <DialogFooter>
