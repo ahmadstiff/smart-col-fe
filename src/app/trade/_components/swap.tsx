@@ -423,7 +423,10 @@ export default function TokenSwap() {
         {isLimitOrder && (
           <div className="space-y-2 mt-4">
             <Label htmlFor="limit-price" className="text-gray-400 text-sm">
-              Limit Price (1 {fromToken?.symbol} = X {toToken?.symbol})
+              Limit Price{" "}
+              {Number(toAmount) && toAmount != ""
+                ? `1 ${fromToken?.symbol} = ${toAmount} ${toToken?.symbol}`
+                : ""}
             </Label>
             <Input
               id="limit-price"
@@ -483,7 +486,7 @@ export default function TokenSwap() {
               {isLimitOrder ? "Creating Limit Order..." : "Swapping..."}
             </div>
           ) : isLimitOrder ? (
-            "Create Limit Orderx"
+            "Create Limit Order"
           ) : (
             "Swap"
           )}
