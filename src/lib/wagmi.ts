@@ -2,8 +2,6 @@ import { http } from "wagmi";
 import { createConfig } from "wagmi";
 import { getDefaultConfig } from "@rainbow-me/rainbowkit";
 import { defineChain } from "viem";
-import LogoEth from '../../public/eth2.jpg'
-import { optimismSepolia } from "viem/chains";
 
 const myCustomChain = defineChain({
   id: 11155931,
@@ -26,9 +24,8 @@ const myCustomChain = defineChain({
 export const config = getDefaultConfig({
   appName: "MyDApp",
   projectId: "YOUR_PROJECT_ID",
-  chains: [myCustomChain,optimismSepolia],
+  chains: [myCustomChain],
   transports: {
     [myCustomChain.id]: http(),
-    [optimismSepolia.id]: http(),
   },
 });
