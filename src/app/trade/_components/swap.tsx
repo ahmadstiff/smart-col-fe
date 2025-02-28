@@ -92,6 +92,9 @@ export default function TokenSwap() {
     null
   );
 
+  const [isLimitOrder, setIsLimitOrder] = useState(false);
+  const [limitPrice, setLimitPrice] = useState("");
+
   const { address } = useAccount();
   const [userAddress, setUserAddress] = useState<string | null>(null);
 
@@ -177,6 +180,7 @@ export default function TokenSwap() {
       const calculatedAmount =
         (Number(fromAmount) * Number(price[0])) / Number(price[1]);
       setToAmount(calculatedAmount.toFixed(6));
+      setLimitPrice(calculatedAmount.toFixed(6));
       setIsCalculating(false);
     }
   }, [fromToken, toToken, fromAmount, price, decimal, isManualInput]);
@@ -214,6 +218,19 @@ export default function TokenSwap() {
     }
   };
 
+  const handleLimitPriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    if (value === "" || (Number(value) >= 0 && !value.startsWith("-"))) {
+      setLimitPrice(value);
+
+      // If we have both tokens and a limit price, calculate the to amount
+      if (fromToken && toToken && fromAmount && value) {
+        const calculatedAmount = Number(fromAmount) * Number(value);
+        setToAmount(calculatedAmount.toFixed(6));
+      }
+    }
+  };
+
   const handleSwap = async () => {
     if (!fromToken || !toToken || !fromAmount || Number(fromAmount) <= 0) {
       Error("Please enter valid swap details");
@@ -223,13 +240,13 @@ export default function TokenSwap() {
     try {
       const amountIn = parseUnits(fromAmount, fromToken.decimals);
 
+      // Regular market swap
       await writeSwap({
         address: lendingPool,
         abi: poolAbi,
         functionName: "swapTokenByPosition",
         args: [toToken.tokenAddress, fromToken.tokenAddress, amountIn],
       });
-
     } catch (error) {
       console.error("Swap error:", error);
     }
@@ -382,6 +399,46 @@ export default function TokenSwap() {
           </div>
         </div>
 
+        <div className="flex items-center justify-between mt-4">
+          <Label
+            htmlFor="limit-toggle"
+            className="text-gray-400 text-sm cursor-pointer"
+          >
+            Limit Order
+          </Label>
+          <div
+            className={`w-12 h-6 flex items-center rounded-full p-1 cursor-pointer ${
+              isLimitOrder ? "bg-blue-500" : "bg-gray-700"
+            }`}
+            onClick={() => setIsLimitOrder(!isLimitOrder)}
+          >
+            <div
+              className={`bg-white w-4 h-4 rounded-full shadow-md transform transition-transform duration-300 ${
+                isLimitOrder ? "translate-x-6" : ""
+              }`}
+            />
+          </div>
+        </div>
+
+        {isLimitOrder && (
+          <div className="space-y-2 mt-4">
+            <Label htmlFor="limit-price" className="text-gray-400 text-sm">
+              Limit Price (1 {fromToken?.symbol} = X {toToken?.symbol})
+            </Label>
+            <Input
+              id="limit-price"
+              type="number"
+              placeholder="0.0"
+              className="flex-grow bg-[#0d0e24] border border-[#1a1b3a] text-white placeholder:text-gray-500 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all duration-300 h-12"
+              value={limitPrice}
+              onChange={handleLimitPriceChange}
+              disabled={!fromToken || !toToken}
+              min="0"
+              step="any"
+            />
+          </div>
+        )}
+
         {fromToken && toToken && fromAmount && toAmount && (
           <div className="text-sm text-gray-400 px-1 text-right">
             1 {fromToken.symbol} ={" "}
@@ -423,8 +480,10 @@ export default function TokenSwap() {
                   d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                 ></path>
               </svg>
-              Swapping...
+              {isLimitOrder ? "Creating Limit Order..." : "Swapping..."}
             </div>
+          ) : isLimitOrder ? (
+            "Create Limit Orderx"
           ) : (
             "Swap"
           )}
@@ -436,21 +495,35 @@ export default function TokenSwap() {
             <div className="flex justify-between text-sm mb-1">
               <span className="text-gray-400">Rate</span>
               <span className="text-white">
-                {fromToken && toToken && fromAmount && toAmount
-                  ? `1 ${fromToken.symbol} = ${(
-                    Number(toAmount) / Number(fromAmount)
-                  ).toFixed(6)} ${toToken.symbol}`
-                  : "-"}
+                {fromToken &&
+                  toToken &&
+                  (isLimitOrder
+                    ? limitPrice
+                    : fromAmount && toAmount
+                    ? `1 ${fromToken.symbol} = ${(
+                        Number(toAmount) / Number(fromAmount)
+                      ).toFixed(6)} ${toToken.symbol}`
+                    : "-")}
               </span>
             </div>
             <div className="flex justify-between text-sm mb-1">
-              <span className="text-gray-400">Price Impact</span>
-              <span className="text-green-400">~0.05%</span>
+              <span className="text-gray-400">
+                {isLimitOrder ? "Order Type" : "Price Impact"}
+              </span>
+              <span
+                className={isLimitOrder ? "text-blue-400" : "text-green-400"}
+              >
+                {isLimitOrder ? "Limit" : "~0.05%"}
+              </span>
             </div>
             <div className="flex justify-between text-sm">
-              <span className="text-gray-400">Minimum Received</span>
+              <span className="text-gray-400">
+                {isLimitOrder ? "Execution" : "Minimum Received"}
+              </span>
               <span className="text-white">
-                {toAmount && toToken
+                {isLimitOrder
+                  ? "When price reaches target"
+                  : toAmount && toToken
                   ? `${(Number(toAmount) * 0.995).toFixed(6)} ${toToken.symbol}`
                   : "-"}
               </span>
