@@ -1,43 +1,31 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
-  Settings,
   ChevronUp,
   ChevronDown,
   Wallet,
   HandCoins,
+  TrendingUp,
+  Coins,
+  CircleDollarSign,
 } from "lucide-react";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import BorrowToken from "./token-supply";
 import AssetsToBorrow from "./asset-to-borrow";
-import { BorrowBalance } from "@/components/user-balance/borrow-balance";
 import { useAccount, useReadContract } from "wagmi";
 import { poolAbi } from "@/lib/abi/poolAbi";
 import {
   lendingPool,
-  mockEna,
   mockUsdc,
   mockUsde,
   mockWbtc,
   mockWeth,
 } from "@/constants/addresses";
-import { position } from "../../../constants/addresses";
-import { Address } from "viem";
+import type { Address } from "viem";
 import { TOKEN_OPTIONS } from "@/constants/tokenOption";
-import { useSupplyAssets, useSupplyShares } from "@/hooks/useTotalSuppy";
-import { positionAbi } from "@/lib/abi/positionAbi";
-import Link from "next/link";
 import PositionToken from "./PositionToken";
-import { userBorrowShares } from "../../../lib/utils/read/userBorrowShares";
 import { useBorrowBalance } from "@/hooks/useBorrowBalance";
+import { Badge } from "@/components/ui/badge";
 
 interface AssetItem {
   id: string;
@@ -87,7 +75,7 @@ export default function BorrowPage() {
     functionName: "addressPosition",
     args: [address],
   });
-  const addressPosition = checkAvailability;
+  const addressPosition = checkAvailability as `0x${string}` | undefined;
   /************************************************ */
 
   /**
@@ -130,7 +118,7 @@ export default function BorrowPage() {
     return realAmount;
   };
 
-  const convertBorrowShares = (amount: Number | unknown, decimal: number) => {
+  const convertBorrowShares = (amount: number | unknown, decimal: number) => {
     const realAmount = convertRealAmount(amount, decimal);
     if (Number(totalSupplyAssets) && Number(totalSupplyShares)) {
       const result =
@@ -144,20 +132,39 @@ export default function BorrowPage() {
    */
 
   return (
-    <div className="min-h-screen p-8">
+    <div className="min-h-screen bg-gradient-to-b from-slate-950 to-slate-900 p-4 md:p-8">
       <div className="mx-auto max-w-6xl space-y-8 mt-5">
-        <div className="text-center space-y-2">
-          <div className="flex items-center justify-center gap-2 text-4xl font-bold text-white">
-            <HandCoins className="h-12 w-12 text-blue-500" />
+        <div className="text-center space-y-3">
+          <div className="flex items-center justify-center gap-2 text-3xl md:text-4xl font-bold text-white">
+            <HandCoins className="h-8 w-8 md:h-12 md:w-12 text-blue-500" />
             <h1>Borrow</h1>
           </div>
-          <p className="text-slate-400">The Best DeFi Yields In 1-Click</p>
+          <p className="text-slate-400 text-sm md:text-base">
+            The Best DeFi Yields In 1-Click
+          </p>
+          <div className="flex justify-center gap-2">
+            <Badge
+              variant="outline"
+              className="bg-blue-950/30 text-blue-400 border-blue-800 px-3 py-1"
+            >
+              <TrendingUp className="h-3.5 w-3.5 mr-1" />
+              High Yields
+            </Badge>
+            <Badge
+              variant="outline"
+              className="bg-emerald-950/30 text-emerald-400 border-emerald-800 px-3 py-1"
+            >
+              <Coins className="h-3.5 w-3.5 mr-1" />
+              Multiple Assets
+            </Badge>
+          </div>
         </div>
 
-        <Card className="bg-slate-900/50 border-none">
-          <CardHeader className="pb-2">
+        <Card className="bg-slate-900/50 border border-slate-800 shadow-lg overflow-hidden">
+          <CardHeader className="pb-2 border-b border-slate-800/50">
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2">
+                <CircleDollarSign className="h-5 w-5 text-blue-500" />
                 <CardTitle className="text-xl text-white">
                   Your Position
                 </CardTitle>
@@ -166,7 +173,7 @@ export default function BorrowPage() {
                 variant="ghost"
                 size="sm"
                 onClick={() => setIsExpanded(!isExpanded)}
-                className="text-slate-400"
+                className="text-slate-400 hover:text-white hover:bg-slate-800"
               >
                 {isExpanded ? (
                   <ChevronUp className="h-4 w-4" />
@@ -177,72 +184,101 @@ export default function BorrowPage() {
             </div>
           </CardHeader>
           {isExpanded && (
-            <CardContent>
-              <div className="space-y-4">
-                <div className="flex flex-wrap gap-4">
-                  <div className="space-y-1 text-center">
-                    <div className="text-sm text-slate-400">Collateral</div>
-                    <div className="text-lg font-medium text-white">
+            <CardContent className="p-4 md:p-6">
+              <div className="space-y-6">
+                <div className="grid grid-cols-3 gap-4 p-4 bg-slate-800/30 rounded-lg">
+                  <div className="space-y-2 text-center">
+                    <div className="text-xs md:text-sm text-slate-400 flex items-center justify-center gap-1">
+                      <Wallet className="h-3.5 w-3.5 text-blue-500" />
+                      Collateral
+                    </div>
+                    <div className="text-base md:text-lg font-medium text-white">
                       {userCollateral
                         ? convertRealAmount(userCollateral, 1e18).toFixed(5)
                         : "0"}{" "}
-                      ${findNameToken(collateralAddress)}
+                      <span className="text-blue-400">
+                        ${findNameToken(collateralAddress)}
+                      </span>
                     </div>
                   </div>
-                  <div className="space-y-1 text-center">
-                    <div className="text-sm text-slate-400">Debt</div>
-                    <div className="text-lg font-medium text-white">
-                      {userBorrowShares || "0"} $
-                      {findNameToken(borrowAddress)}
+                  <div className="space-y-2 text-center">
+                    <div className="text-xs md:text-sm text-slate-400 flex items-center justify-center gap-1">
+                      <HandCoins className="h-3.5 w-3.5 text-red-500" />
+                      Debt
+                    </div>
+                    <div className="text-base md:text-lg font-medium text-white">
+                      {userBorrowShares || "0"}{" "}
+                      <span className="text-blue-400">
+                        ${findNameToken(borrowAddress)}
+                      </span>
                     </div>
                   </div>
-                  <div className="space-y-1 text-center">
-                    <div className="text-sm text-slate-400">APY</div>
-                    <div className="text-lg font-medium text-white">
-                      {userBorrowShares ? "14.45%" : "0"}
+                  <div className="space-y-2 text-center">
+                    <div className="text-xs md:text-sm text-slate-400 flex items-center justify-center gap-1">
+                      <TrendingUp className="h-3.5 w-3.5 text-green-500" />
+                      APY
+                    </div>
+                    <div className="text-base md:text-lg font-medium text-green-400">
+                      {userBorrowShares ? "14.45%" : "0%"}
                     </div>
                   </div>
                 </div>
 
-                <div className="overflow-x-auto">
+                <div className="overflow-x-auto rounded-lg border border-slate-800">
                   {checkAvailability ===
                   "0x0000000000000000000000000000000000000000" ? (
-                    <div className="flex items-center justify-center gap-4 text-xl text-white">
-                      <span className="text-2xl">No positions available</span>
+                    <div className="flex flex-col items-center justify-center gap-4 p-8 text-center">
+                      <div className="bg-slate-800/50 p-4 rounded-full">
+                        <Wallet className="h-10 w-10 text-slate-500" />
+                      </div>
+                      <span className="text-xl md:text-2xl text-slate-300">
+                        No positions available
+                      </span>
+                      <p className="text-sm text-slate-500 max-w-md">
+                        You don't have any active positions. Start by supplying
+                        collateral and borrowing assets.
+                      </p>
+                      <Button className="mt-2 bg-blue-600 hover:bg-blue-700">
+                        Create Position
+                      </Button>
                     </div>
                   ) : (
-                    <div className="grid grid-cols-3 gap-2 justify-center content-center text-center text-white ">
-                      <div className="">Assets</div>
-                      <div className="">Value</div>
-                      <div className="">Actions</div>
-                      {/* WETH */}
-                      <PositionToken
-                        name={findNameToken(mockWeth)}
-                        address={mockWeth}
-                        decimal={1e18}
-                        addressPosition={addressPosition}
-                      />
-                      {/* WBTC */}
-                      <PositionToken
-                        name={findNameToken(mockWbtc)}
-                        address={mockWbtc}
-                        decimal={1e8}
-                        addressPosition={addressPosition}
-                      />
-                      {/* USDE */}
-                      <PositionToken
-                        name={findNameToken(mockUsde)}
-                        address={mockUsde}
-                        decimal={1e8}
-                        addressPosition={addressPosition}
-                      />
-                      {/* USDC */}
-                      <PositionToken
-                        name={findNameToken(mockUsdc)}
-                        address={mockUsdc}
-                        decimal={1e6}
-                        addressPosition={addressPosition}
-                      />
+                    <div>
+                      <div className="grid grid-cols-3 gap-2 p-3 bg-slate-800/50 text-sm font-medium text-slate-400">
+                        <div className="pl-4">Assets</div>
+                        <div className="text-center">Value</div>
+                        <div className="text-center">Actions</div>
+                      </div>
+                      <div className="divide-y divide-slate-800/50">
+                        {/* WETH */}
+                        <PositionToken
+                          name={findNameToken(mockWeth)}
+                          address={mockWeth}
+                          decimal={1e18}
+                          addressPosition={addressPosition}
+                        />
+                        {/* WBTC */}
+                        <PositionToken
+                          name={findNameToken(mockWbtc)}
+                          address={mockWbtc}
+                          decimal={1e8}
+                          addressPosition={addressPosition}
+                        />
+                        {/* USDE */}
+                        <PositionToken
+                          name={findNameToken(mockUsde)}
+                          address={mockUsde}
+                          decimal={1e8}
+                          addressPosition={addressPosition}
+                        />
+                        {/* USDC */}
+                        <PositionToken
+                          name={findNameToken(mockUsdc)}
+                          address={mockUsdc}
+                          decimal={1e6}
+                          addressPosition={addressPosition}
+                        />
+                      </div>
                     </div>
                   )}
                 </div>

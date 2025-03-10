@@ -28,13 +28,13 @@ const NavLink: React.FC<NavLinkProps> = ({ href, children, onClick }) => {
         ${
           isActive
             ? "text-white"
-            : "text-gray-200 hover:text-white hover:bg-white/5"
+            : "text-gray-200 hover:text-[#b721ff]"
         }`}
     >
-      <div className="absolute inset-0 bg-gradient-to-r from-[#b721ff]/10 via-[#21d4fd]/10 to-[#b721ff]/10 opacity-0 group-hover:opacity-100 transition-opacity" />
+      <div className="absolute inset-0 bg-gradient-to-r opacity-0 " />
       {children}
       {isActive && (
-        <div className="absolute bottom-0 left-0 right-0 h-0.5 animate-gradient-x bg-gradient-to-r from-[#b721ff] via-[#21d4fd] to-[#b721ff]" />
+        <div className="absolute bottom-0 left-0 right-0 h-0.5 animate-gradient-x bg-gradient-to-r from-[#b721ff] to-[#21d4fd]" />
       )}
     </Link>
   );
@@ -81,7 +81,7 @@ const Navbar: React.FC = () => {
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50">
-      <div className="absolute inset-0 bg-[#0d0d21]/80 backdrop-blur-md border-b border-white/10" />
+      <div className="absolute inset-0 bg-[#0d0d21]/80 backdrop-blur-md " />
       <div className="relative flex items-center justify-between h-16 px-4 md:px-16 max-w-9xl mx-auto">
         <div className="flex items-center space-x-8">
           <Link
