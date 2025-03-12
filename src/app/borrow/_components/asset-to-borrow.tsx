@@ -237,24 +237,8 @@ export default function AssetsToBorrow() {
                 </div>
 
                 <div className="flex gap-2 mt-4">
-                  <SupplyDialog token={getSymbol(collateralToken)}>
-                    <Button
-                      size="sm"
-                      variant="secondary"
-                      className="w-full bg-blue-500/10 text-blue-400 border-blue-500/30 hover:bg-blue-500/20"
-                    >
-                      Supply
-                    </Button>
-                  </SupplyDialog>
-                  <WithdrawDialog>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      className="w-full border-slate-700 text-slate-300 hover:bg-slate-700/50"
-                    >
-                      Withdraw
-                    </Button>
-                  </WithdrawDialog>
+                  <SupplyDialog token={getSymbol(collateralToken)} />
+                  <WithdrawDialog />
                 </div>
               </div>
             )}
@@ -321,24 +305,8 @@ export default function AssetsToBorrow() {
                 </div>
 
                 <div className="flex gap-2 mt-4">
-                  <BorrowDialog token="USDC">
-                    <Button
-                      size="sm"
-                      variant="secondary"
-                      className="w-full bg-green-500/10 text-green-400 border-green-500/30 hover:bg-green-500/20"
-                    >
-                      Borrow
-                    </Button>
-                  </BorrowDialog>
-                  <RepayDialog>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      className="w-full border-slate-700 text-slate-300 hover:bg-slate-700/50"
-                    >
-                      Repay
-                    </Button>
-                  </RepayDialog>
+                  <BorrowDialog token="USDC" />
+                  <RepayDialog />
                 </div>
               </div>
             )}
