@@ -1,5 +1,4 @@
 "use client";
-
 import { useState, useEffect } from "react";
 import {
   useWriteContract,
@@ -21,11 +20,10 @@ import { Input } from "@/components/ui/input";
 import { poolAbi } from "@/lib/abi/poolAbi";
 import { mockErc20Abi } from "@/lib/abi/mockErc20Abi";
 import { lendingPool, mockWeth } from "@/constants/addresses";
-import { ArrowRight, DollarSign, Loader2, Shield } from "lucide-react";
+import { Loader2, Shield } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useWethBalance } from "@/hooks/useTokenBalance";
-import { Alert } from "@/components/ui/alert";
 
 interface SupplyDialogProps {
   token: string | undefined;
